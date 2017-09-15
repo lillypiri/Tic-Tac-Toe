@@ -9,85 +9,85 @@
 
         var startDiv = document.getElementById('start');
         var startButton = document.querySelector('.button');
-        var xIsNext = true;
-        // show the board when the start button is clicked
-        startButton.addEventListener('click', () => {
-            startDiv.style.display = 'none';
-            boardDiv.style.display = 'block';
-            xPlayer();
-            xMouseOver();
-        });
-        console.log('outside - x is next', xIsNext);
-        // players
-        function xPlayer() {
-                console.log('x is current player');
-                oSymbol.setAttribute('class', 'players');
-                xSymbol.setAttribute('class', 'players active');
-                var xIsNext = false;
-                console.log('its x turn, so x is not next', xIsNext);
-            };
 
-        function oPlayer() {
-                console.log('o is current player');
-                xSymbol.setAttribute('class', 'players');
-                oSymbol.setAttribute('class', 'players active');
-                var xIsNext = true;
-                console.log('it is os turn, so x is next', xIsNext);
-                oMouseOver();
-            };
+        var boxes = [].slice.call(document.getElementsByClassName('box'), 0);
 
-        var boardBoxOne = document.getElementsByTagName('li')[2];
-        boardBoxOne.addEventListener('mouseover', () => {
-            console.log('the system works');
-            boardBoxOne.style.backgroundImage = "url('img/x.svg')";
-        });
-        boardBoxOne.addEventListener('mouseout', () => {
-            boardBoxOne.style.backgroundImage = "";
-        })
+        var state = {
+            currentPlayer: 'x',
+            board: Array(9).map(function () {
+                return null;
+            })
+        }
 
-        boardBoxOne.addEventListener('click', () => {
-            boardBoxOne.setAttribute('class', 'box box-filled-2');
-            oPlayer();
-            // xIsNext ? xPlayer() : oPlayer();
-            console.log('xIsNext after click', xIsNext);
-        });
-
-        var liBoxes = document.getElementsByClassName('box');
-
-        function xMouseOver() {
-                for (var i = 0; i < liBoxes.length; i++) {
-                liBoxes[i].addEventListener('mouseover', function(event) {
-                    event.target.style.backgroundImage = "url('img/x.svg')";
-                })
-            }
-            for (var i = 0; i < liBoxes.length; i++) {
-                liBoxes[i].addEventListener('mouseout', function(event) {
-                    event.target.style.backgroundImage = "";
+        function reset() {
+            state = {
+                currentPlayer: 'x',
+                board: Array(9).map(function () {
+                    return null;
                 })
             }
         }
 
-        function oMouseOver() {
-            if (xIsNext = true) {
-                for (var i = 0; i < liBoxes.length; i++) {
-                    liBoxes[i].addEventListener('mouseover', function(event) {
+        function render() {
+            if (state.currentPlayer === 'x') {
+                oSymbol.className = 'players';
+                xSymbol.className = 'players active';
+                for (var i = 0; i < boxes.length; i++) {
+                    boxes[i].addEventListener('mouseover', function(event) {
+                    event.target.style.backgroundImage = "url('img/x.svg')";
+                })
+            }
+            for (var i = 0; i < boxes.length; i++) {
+                boxes[i].addEventListener('mouseout', function(event) {
+                    event.target.style.backgroundImage = "";
+                })
+            }
+            } else if (state.currentPlayer === 'o') {
+                xSymbol.className = 'players';
+                oSymbol.className = 'players active';
+                for (var i = 0; i < boxes.length; i++) {
+                    boxes[i].addEventListener('mouseover', function(event) {
                         event.target.style.backgroundImage = "url('img/o.svg')";
                     })
                 }
 
-                for (var i = 0; i < liBoxes.length; i++) {
-                    liBoxes[i].addEventListener('mouseout', function(event) {
+                for (var i = 0; i < boxes.length; i++) {
+                    boxes[i].addEventListener('mouseout', function(event) {
                         event.target.style.backgroundImage = "";
                     })
                 }
             }
+            console.log(state.board);
+            boxes.forEach(function (box, index) {
+                if (state.board[index] === 'x') {
+                    box.setAttribute('class', 'box box-filled-2');
+                } else if (state.board[index] ==='o') {
+                    box.setAttribute('class', 'box box-filled-1');
+                } else {
+                    box.setAttribute('class', 'box');
+                }
+
+            })
         }
 
-        for (var i = 0; i < liBoxes.length; i++) {
-            liBoxes[i].addEventListener('click', (event) => {
-                event.target.setAttribute('class', 'box box-filled-2');
-                oPlayer();
-            });
+        function setUp() {
+            boxes.forEach( function (box, index) {
+                box.setAttribute('data-index', index);
+                box.addEventListener('click', function(event) {
+                    state.board[event.target.getAttribute('data-index')] = state.currentPlayer;
+                    state.currentPlayer = state.currentPlayer === 'x' ? 'o' : 'x';
+                    render();
+                })
+            })
         }
+
+        setUp();
+        // show the board when the start button is clicked
+        startButton.addEventListener('click', () => {
+            startDiv.style.display = 'none';
+            boardDiv.style.display = 'block';
+            reset();
+        });
+
     });
 })();

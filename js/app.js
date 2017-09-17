@@ -8,9 +8,16 @@
         var oSymbol = document.getElementById("player1");
 
         var startDiv = document.getElementById("start");
-        var startButton = document.querySelector(".button");
+        var startButton = document.querySelector(".screen-start .button");
 
         var boxes = [].slice.call(document.getElementsByClassName("box"), 0);
+
+        var endGameDiv = document.getElementById("finish");
+        endGameDiv.style.display = "none";
+
+        var screenWin = document.querySelector(".screen-win");
+        var screenWinButton = document.querySelector(".screen-win .button")
+        var screenMessage = document.querySelector(".message");
 
         var state;
 
@@ -50,6 +57,11 @@
                     console.log(state.winner);
                 }
             }
+            if (state.board.filter(function(item) {
+                return item !== null;
+            }).length === 9) {
+                state.winner = "";
+            }
         }
 
         function render() {
@@ -62,6 +74,7 @@
             }
             console.log(state.board);
             boxes.forEach(function(box, index) {
+                box.style.backgroundImage = "";
                 if (state.board[index] === "x") {
                     box.setAttribute("class", "box box-filled-2");
                 } else if (state.board[index] === "o") {
@@ -70,8 +83,19 @@
                     box.setAttribute("class", "box");
                 }
             });
-            if (state.winner != null) {
-                alert(state.winner + " wins");
+            if (state.winner !== null) {
+                boardDiv.style.display = "none";
+                endGameDiv.style.display = "block";
+                if (state.winner === "o") {
+                    screenWin.setAttribute("class", "screen screen-win screen-win-one");
+                    screenMessage.innerText = "Winner";
+                } else if (state.winner === "x") {
+                    screenWin.setAttribute("class", "screen screen-win screen-win-two");
+                    screenMessage.innerText = "Winner";
+                } else {
+                    screenWin.setAttribute("class", "screen screen-win screen-win-tie");
+                    screenMessage.innerText = "It's a Tie!";
+                }
             }
         }
 
@@ -117,6 +141,13 @@
                 boardDiv.style.display = "block";
                 reset();
             });
+
+            screenWinButton.addEventListener("click", () => {
+                reset();
+                render();
+                endGameDiv.style.display = "none";
+                boardDiv.style.display = "block";
+            })
         }
         setUp();
     });

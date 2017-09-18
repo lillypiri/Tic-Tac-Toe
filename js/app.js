@@ -16,8 +16,13 @@
         endGameDiv.style.display = "none";
 
         var screenWin = document.querySelector(".screen-win");
-        var screenWinButton = document.querySelector(".screen-win .button")
+        var screenWinButton = document.querySelector(".screen-win .button");
         var screenMessage = document.querySelector(".message");
+
+        var userName = document.getElementById('username');
+        var xBox = document.getElementById('player2');
+        var p = document.createElement("li");
+
 
         var state;
 
@@ -54,12 +59,14 @@
                     state.board[a] === state.board[c]
                 ) {
                     state.winner = state.board[a];
-                    console.log(state.winner);
+                    // console.log(state.winner);
                 }
             }
-            if (state.board.filter(function(item) {
-                return item !== null;
-            }).length === 9) {
+            if (
+                state.board.filter(function(item) {
+                    return item !== null;
+                }).length === 9
+            ) {
                 state.winner = "";
             }
         }
@@ -72,7 +79,7 @@
                 xSymbol.className = "players";
                 oSymbol.className = "players active";
             }
-            console.log(state.board);
+            // console.log(state.board);
             boxes.forEach(function(box, index) {
                 box.style.backgroundImage = "";
                 if (state.board[index] === "x") {
@@ -87,13 +94,22 @@
                 boardDiv.style.display = "none";
                 endGameDiv.style.display = "block";
                 if (state.winner === "o") {
-                    screenWin.setAttribute("class", "screen screen-win screen-win-one");
+                    screenWin.setAttribute(
+                        "class",
+                        "screen screen-win screen-win-one"
+                    );
                     screenMessage.innerText = "Winner";
                 } else if (state.winner === "x") {
-                    screenWin.setAttribute("class", "screen screen-win screen-win-two");
-                    screenMessage.innerText = "Winner";
+                    screenWin.setAttribute(
+                        "class",
+                        "screen screen-win screen-win-two"
+                    );
+                    screenMessage.innerText = "Winner: " + userName.value;
                 } else {
-                    screenWin.setAttribute("class", "screen screen-win screen-win-tie");
+                    screenWin.setAttribute(
+                        "class",
+                        "screen screen-win screen-win-tie"
+                    );
                     screenMessage.innerText = "It's a Tie!";
                 }
             }
@@ -135,8 +151,17 @@
                 });
             });
 
+            // attach the user's name to the board
+            function appendName() {
+                p.textContent = userName.value;
+                xBox.appendChild(p);
+            };
+
+
+
             // show the board when the start button is clicked
             startButton.addEventListener("click", () => {
+                appendName();
                 startDiv.style.display = "none";
                 boardDiv.style.display = "block";
                 reset();
@@ -147,7 +172,7 @@
                 render();
                 endGameDiv.style.display = "none";
                 boardDiv.style.display = "block";
-            })
+            });
         }
         setUp();
     });

@@ -13,7 +13,25 @@ h1 {
   line-height: 0.7;
   margin: 0 auto;
   text-align: left;
-  width: 1.875em; }
+  width: 1.875em;
+  margin-bottom: 20px;
+}
+
+
+  h2 {
+    font-family: "Montserrat", sans-serif;
+    line-height: 1.5;
+    margin: 0 auto;
+    padding: 16px;
+    text-align: center;
+    font-size: 18px;
+    color: white;
+  }
+
+  input {
+    border-radius: 4px;
+    margin: 20px;
+  }
 
 .button {
   background: #fff;
@@ -65,7 +83,7 @@ h1 {
       line-height: 0;
       z-index: -1; }
   .screen-win-tie {
-    background: #54D17A; }   
+    background: #54D17A; }
   .screen-win-one {
     background: #FFA000; }
     .screen-win-one .button {
@@ -125,7 +143,7 @@ h1 {
     padding: 1.75em;
     cursor: pointer;
     box-sizing: border-box;
-    transition: 0.2s ease; 
+    transition: 0.2s ease;
     background-size: 100px 100px;
     background-repeat: no-repeat;
     background-position: center center;}
@@ -137,5 +155,3 @@ h1 {
     .boxes .box-filled-2 {
       background-color: #3688C3;
       background-image: url(../img/x.svg); }
-
-

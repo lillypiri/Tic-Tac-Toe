@@ -26,6 +26,7 @@
 
         var state;
 
+        // reset the states
         function reset() {
             state = {
                 currentPlayer: "x",
@@ -36,6 +37,7 @@
             };
         }
 
+        // check to see if we have a winner
         function checkWinner() {
             const winningLines = [
                 [0, 1, 2],
@@ -59,10 +61,9 @@
                     state.board[a] === state.board[c]
                 ) {
                     state.winner = state.board[a];
-                    // console.log(state.winner);
                 }
             }
-            if (
+            if (!state.winner &&
                 state.board.filter(function(item) {
                     return item !== null;
                 }).length === 9
@@ -72,6 +73,7 @@
         }
 
         function render() {
+            // visually indicate who the current player is
             if (state.currentPlayer === "x") {
                 oSymbol.className = "players";
                 xSymbol.className = "players active";
@@ -79,7 +81,7 @@
                 xSymbol.className = "players";
                 oSymbol.className = "players active";
             }
-            // console.log(state.board);
+
             boxes.forEach(function(box, index) {
                 box.style.backgroundImage = "";
                 if (state.board[index] === "x") {
@@ -90,6 +92,8 @@
                     box.setAttribute("class", "box");
                 }
             });
+
+            // show the win screen when the game is over
             if (state.winner !== null) {
                 boardDiv.style.display = "none";
                 endGameDiv.style.display = "block";
@@ -119,20 +123,20 @@
             boxes.forEach(function(box, index) {
                 box.setAttribute("data-index", index);
                 box.addEventListener("click", function(event) {
-                    // if the box is filled, stop hammer time
+                    // if the box is already filled, stop! hammer time
                     if (box.getAttribute("class").indexOf("filled") > -1) {
                         return;
                     }
                     state.board[event.target.getAttribute("data-index")] =
                         state.currentPlayer;
                     checkWinner();
+                    botMove();
                     state.currentPlayer =
                         state.currentPlayer === "x" ? "o" : "x";
                     render();
                 });
 
-                // x hover over
-
+                // hovering on an empty square, shows x or o.
                 box.addEventListener("mouseover", function(event) {
                     if (box.getAttribute("class").indexOf("filled") > -1) {
                         return;
@@ -151,13 +155,27 @@
                 });
             });
 
+            // the robot uprising
+            function botMove() {
+                state.currentPlayer =
+                    state.currentPlayer === "x" ? "o" : "x";
+                var freeSquares = [];
+                for (var i = 0; i < state.board.length; i++) {
+                    var square = state.board[i];
+                    if (typeof square === 'undefined') {
+                        freeSquares.push(i);
+                    }
+                }
+                var randomIndex = freeSquares[Math.floor(Math.random()*freeSquares.length)]
+                state.board[randomIndex] = state.currentPlayer;
+                checkWinner();
+            }
+
             // attach the user's name to the board
             function appendName() {
                 p.textContent = userName.value;
                 xBox.appendChild(p);
             };
-
-
 
             // show the board when the start button is clicked
             startButton.addEventListener("click", () => {
@@ -167,6 +185,7 @@
                 reset();
             });
 
+            // reset game when user clicks win screen button
             screenWinButton.addEventListener("click", () => {
                 reset();
                 render();

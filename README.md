@@ -11,3 +11,6 @@ I've aimed for Exceeds Expectations by expanding the project as follows:
 - Player vs. computer. One side of the game is programmatically controlled
 - Player's name appears if they win
 - Tested on Chrome (Version 61.0.3163.91 (Official Build) (64-bit)), Firefox (55.0.3 (64-bit), & Safari (Version 10.1.2 (12603.3.8)).
+
+
+![Tic Tac Toe gif](https://media.giphy.com/media/3ohhwmk0ptN82T4pkQ/giphy.gif "Tic Tac Toe in action")

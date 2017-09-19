@@ -6,7 +6,7 @@
 
 I've aimed for Exceeds Expectations by expanding the project as follows:
 
-- “Player is prompted to enter their name
+- Player is prompted to enter their name
 - Player's name appears on the board screen
 - Player vs. computer. One side of the game is programmatically controlled
 - Player's name appears if they win

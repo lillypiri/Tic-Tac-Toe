@@ -20,56 +20,59 @@
         var screenMessage = document.querySelector(".message");
 
         var userName = document.getElementById('username');
-        var xBox = document.getElementById('player2');
-        var p = document.createElement("li");
-
 
         var state;
 
-        // reset the states
+        var winningLines = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
+        ];
+
+        // reset the state
         function reset() {
             state = {
                 currentPlayer: "x",
-                board: Array(9).map(function() {
-                    return null;
-                }),
+                board: Array(9),
                 winner: null
             };
+
+            render();
         }
 
         // check to see if we have a winner
-        function checkWinner() {
-            const winningLines = [
-                [0, 1, 2],
-                [3, 4, 5],
-                [6, 7, 8],
-                [0, 3, 6],
-                [1, 4, 7],
-                [2, 5, 8],
-                [0, 4, 8],
-                [2, 4, 6]
-            ];
-
-            for (let i = 0; i < winningLines.length; i++) {
+        function checkWinner(board) {
+            for (var i = 0; i < winningLines.length; i++) {
                 var a = winningLines[i][0];
                 var b = winningLines[i][1];
                 var c = winningLines[i][2];
 
                 if (
-                    state.board[a] &&
-                    state.board[a] === state.board[b] &&
-                    state.board[a] === state.board[c]
+                    board[a] &&
+                    board[a] === board[b] &&
+                    board[a] === board[c]
                 ) {
-                    state.winner = state.board[a];
+                    return board[a];
                 }
             }
-            if (!state.winner &&
-                state.board.filter(function(item) {
+            if (boardFull(board)) {
+                return "";
+            }
+
+            return null;
+        }
+
+        // check if the board is full, returns boolean
+        function boardFull(board) {
+            return (board.filter(function(item) {
                     return item !== null;
                 }).length === 9
-            ) {
-                state.winner = "";
-            }
+            );
         }
 
         function render() {
@@ -82,6 +85,7 @@
                 oSymbol.className = "players active";
             }
 
+            // show x or o symbol in the box
             boxes.forEach(function(box, index) {
                 box.style.backgroundImage = "";
                 if (state.board[index] === "x") {
@@ -93,7 +97,7 @@
                 }
             });
 
-            // show the win screen when the game is over
+            // show the win screens when the game is over
             if (state.winner !== null) {
                 boardDiv.style.display = "none";
                 endGameDiv.style.display = "block";
@@ -102,13 +106,13 @@
                         "class",
                         "screen screen-win screen-win-one"
                     );
-                    screenMessage.innerText = "Winner";
+                    screenMessage.innerText = "Winner: Computer";
                 } else if (state.winner === "x") {
                     screenWin.setAttribute(
                         "class",
                         "screen screen-win screen-win-two"
                     );
-                    screenMessage.innerText = "Winner: " + userName.value;
+                    screenMessage.innerText = "Winner: " + userName.value.substring(0, 30);
                 } else {
                     screenWin.setAttribute(
                         "class",
@@ -119,21 +123,33 @@
             }
         }
 
+        // set up the board
         function setUp() {
             boxes.forEach(function(box, index) {
                 box.setAttribute("data-index", index);
                 box.addEventListener("click", function(event) {
+                    if (state.currentPlayer === "o") return;
+
                     // if the box is already filled, stop! hammer time
                     if (box.getAttribute("class").indexOf("filled") > -1) {
                         return;
                     }
+
                     state.board[event.target.getAttribute("data-index")] =
                         state.currentPlayer;
-                    checkWinner();
-                    botMove();
+                    state.winner = checkWinner(state.board);
                     state.currentPlayer =
                         state.currentPlayer === "x" ? "o" : "x";
                     render();
+                    // make the bot appear to be thinking before placing its symbol
+                    setTimeout(function () {
+                        botTurn(state.board, state.currentPlayer);
+                        state.winner = checkWinner(state.board);
+                        state.currentPlayer =
+                            state.currentPlayer === "x" ? "o" : "x";
+
+                        render();
+                    }, 100 + Math.random() * 1000);
                 });
 
                 // hovering on an empty square, shows x or o.
@@ -155,26 +171,15 @@
                 });
             });
 
-            // the robot uprising
-            function botMove() {
-                state.currentPlayer =
-                    state.currentPlayer === "x" ? "o" : "x";
-                var freeSquares = [];
-                for (var i = 0; i < state.board.length; i++) {
-                    var square = state.board[i];
-                    if (typeof square === 'undefined') {
-                        freeSquares.push(i);
-                    }
-                }
-                var randomIndex = freeSquares[Math.floor(Math.random()*freeSquares.length)]
-                state.board[randomIndex] = state.currentPlayer;
-                checkWinner();
-            }
-
             // attach the user's name to the board
             function appendName() {
-                p.textContent = userName.value;
-                xBox.appendChild(p);
+                var nameLabel = document.createElement("div");
+                nameLabel.textContent = "Computer";
+                document.getElementById('player1').appendChild(nameLabel);
+
+                nameLabel = document.createElement("div");
+                nameLabel.textContent = userName.value.substring(0, 30);
+                document.getElementById('player2').appendChild(nameLabel);
             };
 
             // show the board when the start button is clicked
@@ -194,5 +199,48 @@
             });
         }
         setUp();
+
+        /*
+            The bot creates new boards recursively and calculates the move that
+            earns it the most points, then it plays that move
+        */
+        function botTurn(board, player, depth) {
+            if (typeof depth === "undefined") depth = 0;
+
+            var otherPlayer = player === "x" ? "o" : "x";
+
+            if (checkWinner(board) === otherPlayer) {
+                return -10;
+            }
+            if (boardFull(board)) {
+                return 0;
+            }
+
+            var turn = player === "x" ? "x" : "o";
+            var maxScore = -Infinity;
+            var index = 0;
+
+            // recursively making new boards and calculating the moves
+            for (var x = 0; x < 9; x++) {
+                if (typeof board[x] === "undefined") {
+                    var newBoard = board.slice();
+                    newBoard[x] = turn;
+
+                    var moveScore = -botTurn(newBoard, otherPlayer, depth + 1);
+
+                    if (moveScore > maxScore) {
+                        maxScore = moveScore;
+                        index = x;
+                    }
+                }
+            }
+
+            // if we are back in our first call to this function, actually do the move
+            if (depth === 0) {
+                state.board[index] = player;
+            }
+
+            return maxScore;
+        }
     });
 })();

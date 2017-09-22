@@ -4,6 +4,8 @@
 
 ###### This is the fourth of twelve projects for the 🏡 Treehouse Techdegree Full Stack JavaScript.
 
+### [Play here!](https://lillypiri.github.io/Tic-Tac-Toe/#)
+
 I've aimed for Exceeds Expectations by expanding the project as follows:
 
 - Player is prompted to enter their name

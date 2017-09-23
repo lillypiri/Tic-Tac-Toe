@@ -142,14 +142,16 @@
                         state.currentPlayer === "x" ? "o" : "x";
                     render();
                     // make the bot appear to be thinking before placing its symbol
-                    setTimeout(function () {
-                        botTurn(state.board, state.currentPlayer);
-                        state.winner = checkWinner(state.board);
-                        state.currentPlayer =
-                            state.currentPlayer === "x" ? "o" : "x";
+                    if (state.winner === null) {
+                        setTimeout(function () {
+                            botTurn(state.board, state.currentPlayer);
+                            state.winner = checkWinner(state.board);
+                            state.currentPlayer =
+                                state.currentPlayer === "x" ? "o" : "x";
 
-                        render();
-                    }, 100 + Math.random() * 1000);
+                            render();
+                        }, 100 + Math.random() * 1000);
+                    }
                 });
 
                 // hovering on an empty square, shows x or o.
